@@ -10,13 +10,17 @@ logger.setLevel(logging.INFO)
 # Initialize the S3 client
 s3 = boto3.client('s3')
 
-
 def handler(event, context):
     # Get the bucket name and file key from the event
     bucket_name = os.environ['BUCKET_NAME']
     file_key = event['FileKey']
 
     try:
+        logger.debug(f"Checking if file exists: s3://{bucket_name}/{file_key}")
+
+        # Check if the object exists
+        s3.head_object(Bucket=bucket_name, Key=file_key)
+
         logger.debug(f"Retrieving URL for file: s3://{bucket_name}/{file_key}")
 
         # Generate a pre-signed URL to access the file
@@ -30,8 +34,16 @@ def handler(event, context):
             'status': 'success',
             'file_url': url
         }
-    except Exception as e:
+
+    except s3.exceptions.ClientError as e:
+        # If the object does not exist, a ClientError will be raised
         logger.error(f"Error retrieving document {file_key} from bucket {bucket_name}: {str(e)}")
+        return {
+            'status': 'failure',
+            'error': f"File not found: {file_key}"
+        }
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
         return {
             'status': 'failure',
             'error': str(e)
