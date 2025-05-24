@@ -51,6 +51,6 @@ def handler(event, context):
     except Exception as e:
         logger.error(f"Error listing documents in bucket {bucket_name}: {str(e)}")
         return {
-            'status': 'failure',
-            'error': str(e)
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
         }

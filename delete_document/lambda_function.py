@@ -1,3 +1,4 @@
+import json
 import boto3
 import logging
 import os
@@ -22,12 +23,12 @@ def handler(event, context):
         s3.delete_object(Bucket=bucket_name, Key=file_key)
 
         return {
-            'status': 'success',
-            'message': f"File {file_key} deleted successfully."
+            'statusCode': 200,
+            'body': json.dumps({'message': f"File {file_key} deleted successfully."})
         }
     except Exception as e:
         logger.error(f"Error deleting document {file_key} from bucket {bucket_name}: {str(e)}")
         return {
-            'status': 'failure',
-            'error': str(e)
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
         }

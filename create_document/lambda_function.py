@@ -1,3 +1,4 @@
+import json
 import boto3
 import mimetypes
 import logging
@@ -33,12 +34,12 @@ def handler(event, context):
         )
 
         return {
-            'status': 'success',
-            'message': f"File {file_name} uploaded successfully."
+            'statusCode': 200,
+            'body': json.dumps({'message': f"File {file_name} uploaded successfully."})
         }
     except Exception as e:
         logger.error(f"Error uploading document {file_name} to bucket {bucket_name}: {str(e)}")
         return {
-            'status': 'failure',
-            'error': str(e)
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
         }

@@ -31,20 +31,20 @@ def handler(event, context):
         )
 
         return {
-            'status': 'success',
-            'file_url': url
+            'statusCode': 200,
+            'body': json.dumps({'file_url': url})
         }
 
     except s3.exceptions.ClientError as e:
         # If the object does not exist, a ClientError will be raised
         logger.error(f"Error retrieving document {file_key} from bucket {bucket_name}: {str(e)}")
         return {
-            'status': 'failure',
-            'error': f"File not found: {file_key}"
+            'statusCode': 404,
+            'body': json.dumps({'error': f"File not found: {file_key}"})
         }
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         return {
-            'status': 'failure',
-            'error': str(e)
+            'statusCode': 500,
+            'body': json.dumps({'error': str(e)})
         }
