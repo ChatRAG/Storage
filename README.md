@@ -1,2 +1,2 @@
 # Storage
-Storage layer, implemented with Python, deployed as AWS Lambda.
+Secure and reliable storage.
