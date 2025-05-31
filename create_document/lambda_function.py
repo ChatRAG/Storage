@@ -24,18 +24,22 @@ def handler(event, context):
 
         # Decode the file data from base64 if necessary
         file_content = base64.b64decode(file_data['base64_data'])
+        file_key = f'uploads/{file_name}'
 
         # Upload the file to S3
         s3.put_object(
             Bucket=bucket_name,
-            Key=f'uploads/{file_name}',
+            Key=file_key,
             Body=file_content,
             ContentType=mimetypes.guess_type(file_name)[0] or 'application/octet-stream'
         )
 
         return {
             'statusCode': 200,
-            'body': json.dumps({'message': f"File {file_name} uploaded successfully."})
+            'body': json.dumps({
+                'key': file_key,
+                'message': f"File {file_name} uploaded successfully.",
+            })
         }
     except Exception as e:
         logger.error(f"Error uploading document {file_name} to bucket {bucket_name}: {str(e)}")
