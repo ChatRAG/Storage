@@ -4,6 +4,7 @@ import mimetypes
 import logging
 import os
 import base64
+from botocore.exceptions import ClientError
 
 # Set up logging
 logger = logging.getLogger()
@@ -18,13 +19,30 @@ def handler(event, context):
     bucket_name = os.environ['BUCKET_NAME']
     file_data = event['FileData']  # assuming it's base64 encoded
     file_name = event['FileName']
+    file_key = f'uploads/{file_name}'
 
     try:
+        logger.debug(f"Checking if {file_key} exists in bucket: {bucket_name}")
+
+        # Pre-check: does the file already exist?
+        try:
+            s3.head_object(Bucket=bucket_name, Key=file_key)
+            # If no exception, the file exists
+            return {
+                'statusCode': 409,  # Conflict
+                'body': json.dumps({
+                    'error': f"File {file_name} already exists.",
+                    'key': file_key
+                })
+            }
+        except ClientError as e:
+            if e.response['ResponseMetadata']['HTTPStatusCode'] != 404:
+                raise  # Raise other errors (e.g. permission denied)
+
         logger.debug(f"Uploading {file_name} to bucket: {bucket_name}")
 
-        # Decode the file data from base64 if necessary
+        # Decode the file data from base64
         file_content = base64.b64decode(file_data['base64_data'])
-        file_key = f'uploads/{file_name}'
 
         # Upload the file to S3
         s3.put_object(
