@@ -16,7 +16,7 @@ def handler(event, context):
     bucket_name = os.environ['BUCKET_NAME']
 
     try:
-        logger.debug(f"Listing documents in S3 bucket: {bucket_name}")
+        logger.info(f"Listing documents in S3 bucket: {bucket_name}")
 
         prefix = 'uploads/'  # Specify the folder path under which files are stored
 

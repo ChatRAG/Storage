@@ -17,7 +17,7 @@ def handler(event, context):
     file_key = event['FileKey']
 
     try:
-        logger.debug(f"Deleting document: s3://{bucket_name}/{file_key}")
+        logger.info(f"Deleting document: s3://{bucket_name}/{file_key}")
 
         # Delete the file from S3
         s3.delete_object(Bucket=bucket_name, Key=file_key)

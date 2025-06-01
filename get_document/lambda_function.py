@@ -16,12 +16,12 @@ def handler(event, context):
     file_key = event['FileKey']
 
     try:
-        logger.debug(f"Checking if file exists: s3://{bucket_name}/{file_key}")
+        logger.info(f"Checking if file exists: s3://{bucket_name}/{file_key}")
 
         # Check if the object exists
         s3.head_object(Bucket=bucket_name, Key=file_key)
 
-        logger.debug(f"Retrieving URL for file: s3://{bucket_name}/{file_key}")
+        logger.info(f"Retrieving URL for file: s3://{bucket_name}/{file_key}")
 
         # Generate a pre-signed URL to access the file
         url = s3.generate_presigned_url(

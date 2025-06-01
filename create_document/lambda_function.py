@@ -22,7 +22,7 @@ def handler(event, context):
     file_key = f'uploads/{file_name}'
 
     try:
-        logger.debug(f"Checking if {file_key} exists in bucket: {bucket_name}")
+        logger.info(f"Checking if {file_key} exists in bucket: {bucket_name}")
 
         # Pre-check: does the file already exist?
         try:
@@ -37,9 +37,9 @@ def handler(event, context):
             }
         except ClientError as e:
             if e.response['ResponseMetadata']['HTTPStatusCode'] != 404:
-                raise  # Raise other errors (e.g. permission denied)
+                pass
 
-        logger.debug(f"Uploading {file_name} to bucket: {bucket_name}")
+        logger.info(f"Uploading {file_name} to bucket: {bucket_name}")
 
         # Decode the file data from base64
         file_content = base64.b64decode(file_data['base64_data'])
